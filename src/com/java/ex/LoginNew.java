@@ -9,8 +9,10 @@ import com.java.ex.db.*;
 
 public class LoginNew extends JFrame{
 	
+	int pwNum = 0;            // 비밀번호 재확인 0 or 1
+	
 	public LoginNew() {
-		Customer customer = new Customer();        // Customer 데이터베이스 연동 코드 불러오기
+		Customer customer = new Customer();        // Customer.java 연결
 		Container ct = getContentPane();
 		
 		setTitle("회원가입");
@@ -47,14 +49,13 @@ public class LoginNew extends JFrame{
 		PWLabelRe.setFont(new Font("비밀번호 재확인",Font.BOLD,13));
 		jp1.add(PWLabelRe);
 		
-		JPasswordField PWTextRe = new JPasswordField(10);             // 비밀번호 재확인 입력할수있는 텍스트칸
+		JPasswordField PWTextRe = new JPasswordField(10);       // 비밀번호 재확인 입력할수있는 텍스트칸
 		PWTextRe.setBounds(120,205,280,30);
 		jp1.add(PWTextRe);
 		
-		JLabel PWCompareLb = new JLabel("비밀번호가 동일하지않습니다.");         // 비밀번호일치x 기본라벨
+		JLabel PWCompareLb = new JLabel("");         // 비밀번호일치x 기본라벨
 		PWCompareLb.setBounds(120,225,200,30);
-		PWCompareLb.setForeground(Color.red);
-		PWCompareLb.setFont(new Font("비밀번호가 동일하지않습니다.",Font.BOLD,10));
+		PWCompareLb.setFont(new Font("",Font.BOLD,10));
 		jp1.add(PWCompareLb);
 		
 		JButton PWReBtn = new JButton("재확인");         // 재확인 버튼
@@ -65,11 +66,13 @@ public class LoginNew extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				if(PWText.getText().equals(PWTextRe.getText())) {            // 둘의 텍스트가 일치했을경우
 					PWCompareLb.setForeground(Color.blue);                 // 라벨색상 블루
-					PWCompareLb.setText("비밀번호가 동일합니다."); 
+					PWCompareLb.setText("비밀번호가 일치합니다.");
+					pwNum = 1;
 				}
 				else if(PWText.getText() != PWTextRe.getText()) {        // 일치하지않았을 경우
 					PWCompareLb.setForeground(Color.red);                // 라벨색상 레드
-					PWCompareLb.setText("비밀번호가 동일하지않습니다.");
+					PWCompareLb.setText("비밀번호가 일치하지않습니다.");
+					pwNum = 0;
 				}
 			}
 		});
@@ -161,12 +164,17 @@ public class LoginNew extends JFrame{
 					JOptionPane.showMessageDialog(null,"빈칸없이 입력해주세요.","오류",JOptionPane.ERROR_MESSAGE);   // 팝업창
 				}
 				else {
-					customer.createCustomer(IDTxt, PWTxt, NameTxt, GenderTxt, BirthTxt, EmailTxt, PhoneTxt); // customer에서 createCustomer의 명령문에 값들을 실행
-					JOptionPane.showMessageDialog(null,"회원가입이 완료되었습니다.","회원가입성공",JOptionPane.INFORMATION_MESSAGE); // 팝업창
-					
-					LoginHome LH = new LoginHome();
-					LH.setVisible(true);
-					dispose();
+					if(pwNum == 1) {
+						customer.insertCustomer(IDTxt, PWTxt, NameTxt, GenderTxt, BirthTxt, EmailTxt, PhoneTxt); // customer에서 createCustomer의 명령문에 값들을 실행
+						JOptionPane.showMessageDialog(null,"회원가입이 완료되었습니다.","회원가입성공",JOptionPane.INFORMATION_MESSAGE); // 팝업창
+						
+						LoginHome LH = new LoginHome();
+						LH.setVisible(true);
+						dispose();
+					}
+					else if(pwNum == 0){
+						JOptionPane.showMessageDialog(null,"비밀번호를 다시확인해주세요.","오류",JOptionPane.ERROR_MESSAGE);
+					}
 				}
 			}
 		});
@@ -178,8 +186,5 @@ public class LoginNew extends JFrame{
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);   // 다음창으로 옮길시 창을닫아줌
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  // 창 종료시 JFrame 자동종료
 		setVisible(true);                              // JFrame을 보여주라
-	}
-	public static void main(String[] args) {
-		LoginNew LN = new LoginNew();
 	}
 }

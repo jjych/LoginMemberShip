@@ -6,7 +6,13 @@ import java.awt.event.ActionListener;
 
 import javax.swing.*;
 
+import com.java.ex.db.Customer;
+
 public class LoginPWSearch extends JFrame{
+	
+	JTextField IdText = null;
+	JTextField BirthText = null;
+	
 	public LoginPWSearch() {
         Container ct = getContentPane();
 		
@@ -21,7 +27,7 @@ public class LoginPWSearch extends JFrame{
 		IDLb.setFont(new Font("ID",Font.BOLD,15));
 		jp1.add(IDLb);
 		
-		JTextField IdText = new JTextField();         // ID 치는칸
+		IdText = new JTextField();         // ID 치는칸
 		IdText.setBounds(100,50,200,30);
 		jp1.add(IdText);
 		
@@ -30,7 +36,7 @@ public class LoginPWSearch extends JFrame{
 		BirthLb.setFont(new Font("생년월일",Font.BOLD,13));
 		jp1.add(BirthLb);
 		
-		JTextField BirthText = new JTextField();         // 생년월일 치는칸
+		BirthText = new JTextField();         // 생년월일 치는칸
 		BirthText.setBounds(100,100,200,30);
 		jp1.add(BirthText);
 		
@@ -50,11 +56,9 @@ public class LoginPWSearch extends JFrame{
 		Next.setBounds(200,150,100,40);
 		jp1.add(Next);
 		
-		Next.addActionListener(new ActionListener() {
+		Next.addActionListener(new ActionListener() {         // 버튼누를시 PWSearch 메소드 실행
 			public void actionPerformed(ActionEvent e) {
-				LoginPwRe LPR = new LoginPwRe();
-				LPR.setVisible(true);
-				dispose();
+				PWSearch();
 			}
 		});
 		
@@ -65,5 +69,32 @@ public class LoginPWSearch extends JFrame{
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);   // 다음창으로 옮길시 창을닫아줌
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  // 창 종료시 JFrame 자동종료
 		setVisible(true);                              // JFrame을 보여주라
+	}
+	
+	// 비밀번호 찾는 메소드
+	public void PWSearch() {
+		Customer customer = new Customer();
+		customer.SelectPWCustomer(IdText.getText(), BirthText.getText());
+		try {
+			customer.pstmt.setString(1,IdText.getText());       // 아이디 텍스트칸 불러오기
+			customer.pstmt.setString(2,BirthText.getText());    // 생년월일 텍스트칸 불러오기
+			customer.rs = customer.pstmt.executeQuery();
+			
+			if(customer.rs.next()) {            // 일치하는 데이터가 있을경우
+				JOptionPane.showMessageDialog(null, "비밀번호를 재설정합니다.","비밀번호 찾기",JOptionPane.INFORMATION_MESSAGE);
+				LoginPwRe LPR = new LoginPwRe();
+				LPR.setVisible(true);
+				dispose();
+			}
+			else if(IdText.getText().equals("") || BirthText.getText().equals("")) {   // 빈칸이있을경우 
+				JOptionPane.showMessageDialog(null,"빈칸없이 입력해주세요","오류",JOptionPane.ERROR_MESSAGE);
+			}
+			else {              // 일치하는 데이터가 없을경우
+				JOptionPane.showMessageDialog(null, "아이디 또는 생년월일이 일치하지않습니다.","비밀번호 찾기",JOptionPane.ERROR_MESSAGE);
+			}
+		}catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		customer.Close();
 	}
 }
