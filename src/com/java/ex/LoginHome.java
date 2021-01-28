@@ -7,6 +7,8 @@ import javax.swing.*;
 import com.java.ex.*;
 
 public class LoginHome extends JFrame{
+	private String userid;    // userid 공유하는 변수 선언
+	
 	public LoginHome() {
 		Container ct = getContentPane();
 		
@@ -15,10 +17,6 @@ public class LoginHome extends JFrame{
 		
 		JPanel jp1 = new JPanel();
 		jp1.setLayout(null);
-		
-//		JLabel jl1 = new JLabel("혁수의전설");
-//		jl1.setHorizontalAlignment(JLabel.CENTER);            // 정중앙으로 고정
-//		jl1.setFont(new Font("로그인", Font.BOLD, 30));        // 글씨 크기 폰트 조절
 		
 		JLabel tema = new JLabel("로그인");
 		tema.setBounds(200,30,100,50);
@@ -47,6 +45,13 @@ public class LoginHome extends JFrame{
 		Login.setFont(new Font("Login", Font.BOLD, 15));
 		Login.setBounds(350,90,100,70);
 		jp1.add(Login);
+		
+		// 로그인 버튼 눌렀을시 이벤트
+		Login.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
 		
 		JLabel IdSearch = new JLabel("아이디 ·");           // 아이디찾기 화면으로 넘어가는 라벨
 		IdSearch.setFont(new Font("아이디",Font.BOLD,12));
@@ -90,7 +95,6 @@ public class LoginHome extends JFrame{
 				}
 			});
 		
-//		ct.add(jl1,BorderLayout.NORTH);
 		ct.add(jp1);
 		
 		setBounds(1,1,500,300);

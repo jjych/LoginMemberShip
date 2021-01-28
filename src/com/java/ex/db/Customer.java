@@ -50,15 +50,34 @@ public class Customer {
 		}
 	}
 	
-//	// 새비밀번호 설정 메소드
-//	public void UpdatePw(String pw) {
-//		try {
-//			pstmt = con.prepareStatement("Update membership set PW value"+"('"+ pw +"')"+ "where ID = 'jjych072'");
-//			rs = pstmt.executeQuery();
-//		}catch(Exception e) {
-//			System.out.println(e.getMessage());
-//		}
-//	}
+	// DB Select 메소드
+	public void Select(String dbSelect) {
+		try {
+			pstmt = con.prepareStatement(dbSelect);
+		}catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	// DB Update 메소드
+	public void Update(String dbUpdate) {
+		try {
+			pstmt = con.prepareStatement(dbUpdate);
+		}catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	// 접속 처리 메소드
+	public void setOnline(String userid) {
+		Update("update membership set isOnline = 1 where ID = ?");
+		try {
+			pstmt.setString(1, userid);
+			pstmt.executeUpdate();
+		}catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
 	
 	public void getConnection() {               // 회원정보 DB연결
 		try {

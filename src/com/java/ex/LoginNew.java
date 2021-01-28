@@ -9,7 +9,9 @@ import com.java.ex.db.*;
 
 public class LoginNew extends JFrame{
 	
+	int idNum = 0;            // 아이디 중복확인 0 or 1
 	int pwNum = 0;            // 비밀번호 재확인 0 or 1
+	JTextField IDText = null;
 	
 	public LoginNew() {
 		Customer customer = new Customer();        // Customer.java 연결
@@ -31,9 +33,49 @@ public class LoginNew extends JFrame{
 		IDLabel.setFont(new Font("아이디",Font.BOLD,13));
 		jp1.add(IDLabel);
 		
-		JTextField IDText = new JTextField(10);             // 아이디 입력할수있는 텍스트칸
+		IDText = new JTextField(10);             // 아이디 입력할수있는 텍스트칸
 		IDText.setBounds(120,110,280,30);
 		jp1.add(IDText);
+		
+		JLabel IDCheck = new JLabel("");               // 아이디체크라벨
+		IDCheck.setBounds(120,120,200,50);
+		IDCheck.setFont(new Font("",Font.BOLD,10));
+		jp1.add(IDCheck);
+		
+		JButton IDBtn = new JButton("중복확인");              // 아이디 중복확인 버튼
+		IDBtn.setFont(new Font("중복확인",Font.BOLD,10));
+		IDBtn.setBounds(400,110,80,30);
+		jp1.add(IDBtn);
+		
+		// 중복버튼 클릭시
+		IDBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				customer.Select("select * from membership where ID = ?");
+				try {
+					customer.pstmt.setString(1, IDText.getText());
+					customer.rs = customer.pstmt.executeQuery();
+					if(customer.rs.next()) {
+						if(IDText.getText().equals(customer.rs.getString("ID"))) {
+							IDCheck.setForeground(Color.red);                 // 라벨색상 레드
+							IDCheck.setText("중복된 아이디입니다.");
+							idNum = 0;
+						}
+					}
+					else if(IDText.getText().equals("")){
+						IDCheck.setForeground(Color.red);                 // 라벨색상 레드
+						IDCheck.setText("아이디를 입력해주세요.");
+						idNum = 0;
+					}
+					else{
+						IDCheck.setForeground(Color.blue);                 // 라벨색상 블루
+						IDCheck.setText("사용할 수 있는 아이디입니다.");
+						idNum = 1;
+					}
+				}catch(Exception e2) {
+					System.out.println(e2.getMessage());
+				}
+			}
+		});
 		
 		JLabel PWLabel = new JLabel("비밀번호");              // 비밀번호 입력 라벨
 		PWLabel.setBounds(50,150,200,50);
@@ -64,12 +106,17 @@ public class LoginNew extends JFrame{
 		
 		PWReBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(PWText.getText().equals(PWTextRe.getText())) {            // 둘의 텍스트가 일치했을경우
+				if(PWText.getText().equals("") || PWTextRe.getText().equals("")){
+					PWCompareLb.setForeground(Color.red);                // 라벨색상 레드
+					PWCompareLb.setText("비밀번호를 입력해주세요.");
+					pwNum = 0;
+				}
+				else if(PWText.getText().equals(PWTextRe.getText())) {            // 둘의 텍스트가 일치했을경우
 					PWCompareLb.setForeground(Color.blue);                 // 라벨색상 블루
 					PWCompareLb.setText("비밀번호가 일치합니다.");
 					pwNum = 1;
 				}
-				else if(PWText.getText() != PWTextRe.getText()) {        // 일치하지않았을 경우
+				else if(PWText.getText() != PWTextRe.getText() ) {        // 일치하지않았을 경우
 					PWCompareLb.setForeground(Color.red);                // 라벨색상 레드
 					PWCompareLb.setText("비밀번호가 일치하지않습니다.");
 					pwNum = 0;
@@ -164,13 +211,16 @@ public class LoginNew extends JFrame{
 					JOptionPane.showMessageDialog(null,"빈칸없이 입력해주세요.","오류",JOptionPane.ERROR_MESSAGE);   // 팝업창
 				}
 				else {
-					if(pwNum == 1) {
+					if(pwNum == 1 && idNum == 1) {
 						customer.insertCustomer(IDTxt, PWTxt, NameTxt, GenderTxt, BirthTxt, EmailTxt, PhoneTxt); // customer에서 createCustomer의 명령문에 값들을 실행
 						JOptionPane.showMessageDialog(null,"회원가입이 완료되었습니다.","회원가입성공",JOptionPane.INFORMATION_MESSAGE); // 팝업창
 						
 						LoginHome LH = new LoginHome();
 						LH.setVisible(true);
 						dispose();
+					}
+					else if(idNum == 0) {
+						JOptionPane.showMessageDialog(null,"아이디를 다시확인해주세요.","오류",JOptionPane.ERROR_MESSAGE);
 					}
 					else if(pwNum == 0){
 						JOptionPane.showMessageDialog(null,"비밀번호를 다시확인해주세요.","오류",JOptionPane.ERROR_MESSAGE);

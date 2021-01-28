@@ -10,6 +10,8 @@ import com.java.ex.db.Customer;
 
 public class LoginPWSearch extends JFrame{
 	
+	private String userid;    // 여러곳에 공유할수있는 userid 변수 설정
+	
 	JTextField IdText = null;
 	JTextField BirthText = null;
 	
@@ -81,8 +83,9 @@ public class LoginPWSearch extends JFrame{
 			customer.rs = customer.pstmt.executeQuery();
 			
 			if(customer.rs.next()) {            // 일치하는 데이터가 있을경우
+//				customer.setOnline(IdText.getText());
 				JOptionPane.showMessageDialog(null, "비밀번호를 재설정합니다.","비밀번호 찾기",JOptionPane.INFORMATION_MESSAGE);
-				LoginPwRe LPR = new LoginPwRe();
+				LoginPwRe LPR = new LoginPwRe(IdText.getText());
 				LPR.setVisible(true);
 				dispose();
 			}
