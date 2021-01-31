@@ -5,9 +5,12 @@ import java.awt.event.*;
 
 import javax.swing.*;
 import com.java.ex.*;
+import com.java.ex.db.Customer;
 
 public class LoginHome extends JFrame{
 	private String userid;    // userid 공유하는 변수 선언
+	JTextField idText = null;
+	JPasswordField pwText = null;
 	
 	public LoginHome() {
 		Container ct = getContentPane();
@@ -28,7 +31,7 @@ public class LoginHome extends JFrame{
 		idLabel.setFont(new Font("아이디", Font.BOLD,15));
 		jp1.add(idLabel);
 		
-		JTextField idText = new JTextField(10);             // 아이디 치는 텍스트필드
+		idText = new JTextField(10);             // 아이디 치는 텍스트필드
 		idText.setBounds(140,90,200,30);
 		jp1.add(idText);
 		
@@ -37,7 +40,7 @@ public class LoginHome extends JFrame{
 		pwLabel.setFont(new Font("비밀번호", Font.BOLD,15));
 		jp1.add(pwLabel);
 		
-		JTextField pwText = new JTextField(10);             // 비밀번호 치는 텍스트필드
+		pwText = new JPasswordField(10);             // 비밀번호 치는 텍스트필드
 		pwText.setBounds(140,130,200,30);
 		jp1.add(pwText);
 		
@@ -49,7 +52,7 @@ public class LoginHome extends JFrame{
 		// 로그인 버튼 눌렀을시 이벤트
 		Login.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+				LoginOK();
 			}
 		});
 		
@@ -102,5 +105,28 @@ public class LoginHome extends JFrame{
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);   // 다음창으로 옮길시 창을닫아줌
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  // 창 종료시 JFrame 자동종료
 		setVisible(true);                              // JFrame을 보여주라
+	}
+	
+	// 로그인 확인하는 메소드
+	public void LoginOK() {
+		Customer customer = new Customer();
+		customer.Select("select * from membership where ID = ? and PW = ?");
+		try {
+			customer.pstmt.setString(1, idText.getText());
+			customer.pstmt.setString(2, pwText.getText());
+			customer.rs = customer.pstmt.executeQuery();
+			
+			if(customer.rs.next()) {
+				JOptionPane.showMessageDialog(null, "로그인 성공","로그인",JOptionPane.INFORMATION_MESSAGE);
+			}
+			else if(idText.getText().equals("") || pwText.getText().equals("")){
+				JOptionPane.showMessageDialog(null, "빈칸없이 입력했는지 확인해주세요.","오류",JOptionPane.ERROR_MESSAGE);
+			}
+			else if(!customer.rs.next()) {
+				JOptionPane.showMessageDialog(null, "아이디 또는 비밀번호가 잘못되었습니다.","오류",JOptionPane.ERROR_MESSAGE);
+			}
+		}catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
 	}
 }
